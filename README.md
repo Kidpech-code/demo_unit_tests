@@ -185,6 +185,220 @@ void main() {
 }
 ```
 
+#### **mocktail** - Modern Mock Framework
+
+```yaml
+dev_dependencies:
+  mocktail: ^1.0.4
+```
+
+**ข้อดีของ Mocktail:**
+
+- ✅ **ไม่ต้องใช้ code generation** - ไม่ต้องรัน build_runner
+- ✅ **Syntax ที่เข้าใจง่าย** - ใช้ `when()` และ `verify()` เหมือน Mockito
+- ✅ **Type-safe** - ตรวจสอบ type ได้ดีกว่า
+- ✅ **Modern Dart** - ออกแบบสำหรับ Dart 2.12+ และ null-safety
+
+**การใช้งาน Mocktail:**
+
+```dart
+// 1. สร้าง Mock class
+class MockWebViewController extends Mock implements WebViewController {}
+
+// 2. ใช้ใน test
+void main() {
+  setUpAll(() {
+    registerFallbackValue(Uri.parse('https://example.com'));
+  });
+
+  late WebViewService webViewService;
+  late MockWebViewController mockController;
+
+  setUp(() {
+    mockController = MockWebViewController();
+    webViewService = WebViewService();
+  });
+
+  test('should load URL when controller exists', () async {
+    // Arrange
+    const testUrl = 'https://example.com';
+    when(() => mockController.loadRequest(any())).thenAnswer((_) async {});
+    webViewService.controller = mockController;
+
+    // Act
+    await webViewService.loadUrl(testUrl);
+
+    // Assert
+    verify(() => mockController.loadRequest(Uri.parse(testUrl))).called(1);
+  });
+
+  test('should run JavaScript and return result', () async {
+    // Arrange
+    const script = 'document.title';
+    const expectedResult = 'Test Title';
+    when(() => mockController.runJavaScriptReturningResult(script))
+        .thenAnswer((_) async => expectedResult);
+    webViewService.controller = mockController;
+
+    // Act
+    final result = await webViewService.runJavaScript(script);
+
+    // Assert
+    expect(result, expectedResult);
+    verify(() => mockController.runJavaScriptReturningResult(script)).called(1);
+  });
+}
+```
+
+**ตัวอย่างจริง: WebViewController Testing**
+
+```dart
+// lib/services/webview_service.dart
+class WebViewService {
+  WebViewController? controller;
+
+  Future<void> loadUrl(String url) async {
+    if (controller != null) {
+      await controller!.loadRequest(Uri.parse(url));
+    }
+  }
+
+  Future<Object?> runJavaScript(String script) async {
+    if (controller != null) {
+      return await controller!.runJavaScriptReturningResult(script);
+    }
+    return null;
+  }
+
+  Future<bool> canGoBack() async {
+    if (controller != null) {
+      return await controller!.canGoBack();
+    }
+    return false;
+  }
+}
+
+// test/services/webview_service_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:demo_unit_tests/services/webview_service.dart';
+
+class MockWebViewController extends Mock implements WebViewController {}
+
+void main() {
+  setUpAll(() {
+    registerFallbackValue(Uri.parse('https://example.com'));
+  });
+
+  late WebViewService webViewService;
+  late MockWebViewController mockController;
+
+  setUp(() {
+    mockController = MockWebViewController();
+    webViewService = WebViewService();
+  });
+
+  tearDown(() {
+    webViewService.dispose();
+  });
+
+  group('WebViewService', () {
+    test('should load URL when controller exists', () async {
+      // Arrange
+      const testUrl = 'https://example.com';
+      when(() => mockController.loadRequest(any())).thenAnswer((_) async {});
+      webViewService.controller = mockController;
+
+      // Act
+      await webViewService.loadUrl(testUrl);
+
+      // Assert
+      verify(() => mockController.loadRequest(Uri.parse(testUrl))).called(1);
+    });
+
+    test('should go back when canGoBack returns true', () async {
+      // Arrange
+      when(() => mockController.canGoBack()).thenAnswer((_) async => true);
+      when(() => mockController.goBack()).thenAnswer((_) async {});
+      webViewService.controller = mockController;
+
+      // Act
+      await webViewService.goBack();
+
+      // Assert
+      verify(() => mockController.goBack()).called(1);
+    });
+
+    test('should not go back when canGoBack returns false', () async {
+      // Arrange
+      when(() => mockController.canGoBack()).thenAnswer((_) async => false);
+      webViewService.controller = mockController;
+
+      // Act
+      await webViewService.goBack();
+
+      // Assert
+      verifyNever(() => mockController.goBack());
+    });
+
+    test('should run JavaScript and return result', () async {
+      // Arrange
+      const script = 'document.title';
+      const expectedResult = 'Test Title';
+      when(() => mockController.runJavaScriptReturningResult(script))
+          .thenAnswer((_) async => expectedResult);
+      webViewService.controller = mockController;
+
+      // Act
+      final result = await webViewService.runJavaScript(script);
+
+      // Assert
+      expect(result, expectedResult);
+      verify(() => mockController.runJavaScriptReturningResult(script)).called(1);
+    });
+
+    test('should return null when running JavaScript without controller', () async {
+      // Arrange
+      const script = 'document.title';
+
+      // Act
+      final result = await webViewService.runJavaScript(script);
+
+      // Assert
+      expect(result, isNull);
+    });
+
+    test('should return false for canGoBack when controller is null', () async {
+      // Act
+      final result = await webViewService.canGoBack();
+
+      // Assert
+      expect(result, isFalse);
+    });
+  });
+}
+```
+
+**ข้อแตกต่างระหว่าง Mockito และ Mocktail:**
+
+| Feature | Mockito | Mocktail |
+|---------|---------|----------|
+| **Code Generation** | ต้องใช้ build_runner | ไม่ต้อง generate |
+| **Syntax** | `@GenerateNiceMocks` | `class MockX extends Mock implements X` |
+| **Fallback Values** | จัดการเอง | `registerFallbackValue()` |
+| **Type Safety** | ดี | ยอดเยี่ยม |
+| **Setup Complexity** | ปานกลาง | ง่าย |
+| **Learning Curve** | ปานกลาง | ต่ำ |
+
+**เมื่อไหร่ควรใช้ Mocktail:**
+
+- ✅ **Modern Flutter Projects** - Dart 2.12+ กับ null-safety
+- ✅ **Simple Mocking** - ไม่ต้องการ advanced features
+- ✅ **Fast Development** - ไม่ต้องการรอ code generation
+- ✅ **Type Safety** - ต้องการ compile-time checks ที่ดี
+- ✅ **Learning Projects** - เริ่มต้นเรียน mocking
+
 ### 📊 **Test Coverage Tools**
 
 #### **Built-in Coverage**
@@ -926,8 +1140,8 @@ test('should handle API errors', () {});
 
 #### **📈 จำนวน Test Cases**
 
-- **🧪 Total Test Cases**: **213 tests**
-- **✅ Success Rate**: **100% (213/213)**
+- **🧪 Total Test Cases**: **223 tests**
+- **✅ Success Rate**: **100% (223/223)**
 - **⚡ Execution Time**: ~7 วินาที
 - **📊 Code Coverage**: ครอบคลุมทุก component สำคัญ
 
@@ -935,10 +1149,10 @@ test('should handle API errors', () {});
 
 | ประเภท Testing        | จำนวน Tests | ระดับความยาก | สำหรับใคร   |
 | --------------------- | ----------- | ------------ | ----------- |
-| **Unit Tests**        | 150+        | 🟢 ง่าย      | ผู้เริ่มต้น |
+| **Unit Tests**        | 160+        | 🟢 ง่าย      | ผู้เริ่มต้น |
 | **Widget Tests**      | 40+         | 🟡 ปานกลาง   | ระดับกลาง   |
 | **Integration Tests** | 3           | 🔴 ยาก       | ระดับสูง    |
-| **Mocking Tests**     | 20+         | 🟠 ขั้นสูง   | Expert      |
+| **Mocking Tests**     | 30+         | 🟠 ขั้นสูง   | Expert      |
 
 #### **🎯 หัวข้อที่ครอบคลุม**
 
@@ -1678,20 +1892,21 @@ A:
 
 | หมวดหมู่              | จำนวน Tests | สถานะ | หัวข้อที่ครอบคลุม                    |
 | --------------------- | ----------- | ----- | ------------------------------------ |
-| **User Model**        | 16/16 ✅    | 100%  | Validation, Serialization, Equality  |
-| **User Service**      | 27/27 ✅    | 100%  | CRUD Operations, Business Logic      |
-| **Math Utils**        | 35/35 ✅    | 100%  | Arithmetic, Statistics, Edge Cases   |
-| **String Helper**     | 25/25 ✅    | 100%  | Text Processing, Validation, Unicode |
-| **API Service**       | 8/8 ✅      | 100%  | HTTP Mocking, Error Handling         |
-| **Widget Tests**      | 38/38 ✅    | 100%  | UI Components, User Interactions     |
-| **Exception Tests**   | 42/42 ✅    | 100%  | Error Handling, Retry Logic          |
-| **Async Service**     | 33/33 ✅    | 100%  | Future/Stream, Concurrent Operations |
-| **Integration Tests** | 3/3 ✅      | 100%  | End-to-End Workflows                 |
+| **User Model**        | 16          | ✅ 100%   | Validation, Serialization, Equality  |
+| **User Service**      | 27          | ✅ 100%   | CRUD Operations, Business Logic      |
+| **Math Utils**        | 35          | ✅ 100%   | Arithmetic, Statistics, Edge Cases   |
+| **String Helper**     | 25          | ✅ 100%   | Text Processing, Validation, Unicode |
+| **API Service**       | 8           | ✅ 100%   | HTTP Mocking, Error Handling         |
+| **WebView Service**   | 10          | ✅ 100%   | WebView Mocking, Navigation, JS      |
+| **Widget Tests**      | 38          | ✅ 100%   | UI Components, User Interactions     |
+| **Exception Tests**   | 42          | ✅ 100%   | Error Handling, Retry Logic          |
+| **Async Service**     | 33          | ✅ 100%   | Future/Stream, Concurrent Operations |
+| **Integration Tests** | 3           | ✅ 100%   | End-to-End Workflows                 |
 
 ### 📊 **สถิติสุดท้าย**
 
-- **🧪 Total Test Cases**: **213 tests**
-- **✅ Success Rate**: **100% (213/213)**
+- **🧪 Total Test Cases**: **223 tests**
+- **✅ Success Rate**: **100% (223/223)**
 - **⚡ Execution Time**: 7 วินาที
 - **🎯 Zero Failures**: ไม่มี failing tests
 - **📚 Documentation**: ครบถ้วน 100%
@@ -1825,7 +2040,7 @@ A:
 
 #### ✅ **ประสบการณ์ (Experience)**
 
-- ได้ลองมือกับ 213 test cases จริง
+- ได้ลองมือกับ 223 test cases จริง
 - เข้าใจปัญหาที่พบบ่อยและวิธีแก้ไข
 - มีตัวอย่าง reference สำหรับโปรเจคจริง
 
