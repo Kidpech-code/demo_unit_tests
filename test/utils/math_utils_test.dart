@@ -75,6 +75,7 @@ void main() {
         expect(MathUtils.factorial(1), equals(1));
         expect(MathUtils.factorial(5), equals(120));
         expect(MathUtils.factorial(3), equals(6));
+        expect(MathUtils.factorial(10), equals(3628800));
       });
 
       test('factorial should throw exception for negative numbers', () {
@@ -120,6 +121,8 @@ void main() {
         expect(MathUtils.isPrime(5), isTrue);
         expect(MathUtils.isPrime(7), isTrue);
         expect(MathUtils.isPrime(11), isTrue);
+        expect(MathUtils.isPrime(97), isTrue);
+        expect(MathUtils.isPrime(101), isTrue);
 
         expect(MathUtils.isPrime(1), isFalse);
         expect(MathUtils.isPrime(4), isFalse);
@@ -128,6 +131,7 @@ void main() {
         expect(MathUtils.isPrime(9), isFalse);
         expect(MathUtils.isPrime(0), isFalse);
         expect(MathUtils.isPrime(-2), isFalse);
+        expect(MathUtils.isPrime(100), isFalse);
       });
     });
 

@@ -91,7 +91,9 @@ void main() {
       // Arrange
       const script = 'document.title';
       const expectedResult = 'Test Title';
-      when(() => mockController.runJavaScriptReturningResult(script)).thenAnswer((_) async => expectedResult);
+      when(
+        () => mockController.runJavaScriptReturningResult(script),
+      ).thenAnswer((_) async => expectedResult);
       webViewService.controller = mockController;
 
       // Act
@@ -99,19 +101,24 @@ void main() {
 
       // Assert
       expect(result, expectedResult);
-      verify(() => mockController.runJavaScriptReturningResult(script)).called(1);
+      verify(
+        () => mockController.runJavaScriptReturningResult(script),
+      ).called(1);
     });
 
-    test('should return null when running JavaScript without controller', () async {
-      // Arrange
-      const script = 'document.title';
+    test(
+      'should return null when running JavaScript without controller',
+      () async {
+        // Arrange
+        const script = 'document.title';
 
-      // Act
-      final result = await webViewService.runJavaScript(script);
+        // Act
+        final result = await webViewService.runJavaScript(script);
 
-      // Assert
-      expect(result, isNull);
-    });
+        // Assert
+        expect(result, isNull);
+      },
+    );
 
     test('should return false for canGoBack when controller is null', () async {
       // Act
@@ -121,13 +128,16 @@ void main() {
       expect(result, isFalse);
     });
 
-    test('should return false for canGoForward when controller is null', () async {
-      // Act
-      final result = await webViewService.canGoForward();
+    test(
+      'should return false for canGoForward when controller is null',
+      () async {
+        // Act
+        final result = await webViewService.canGoForward();
 
-      // Assert
-      expect(result, isFalse);
-    });
+        // Assert
+        expect(result, isFalse);
+      },
+    );
 
     test('should dispose controller correctly', () {
       // Arrange
@@ -138,6 +148,27 @@ void main() {
 
       // Assert
       expect(webViewService.controller, isNull);
+    });
+
+    test('should not throw when loading URL without controller', () async {
+      // Act & Assert - ไม่มี controller แต่ไม่ควร throw
+      await webViewService.loadUrl('https://example.com');
+    });
+
+    test('should not throw when reloading without controller', () async {
+      await webViewService.reload();
+    });
+
+    test('should not go forward when canGoForward returns false', () async {
+      // Arrange
+      when(() => mockController.canGoForward()).thenAnswer((_) async => false);
+      webViewService.controller = mockController;
+
+      // Act
+      await webViewService.goForward();
+
+      // Assert
+      verifyNever(() => mockController.goForward());
     });
   });
 }

@@ -135,6 +135,23 @@ void main() {
         // Assert - ควรแสดง '?' ใน avatar
         expect(find.text('?'), findsOneWidget);
       });
+
+      testWidgets('should not show action buttons when no callbacks', (
+        tester,
+      ) async {
+        // Act
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: UserCard(name: 'John Doe', email: 'john@example.com'),
+            ),
+          ),
+        );
+
+        // Assert - ไม่ควรแสดงปุ่ม edit/delete
+        expect(find.byIcon(Icons.edit), findsNothing);
+        expect(find.byIcon(Icons.delete), findsNothing);
+      });
     });
 
     group('CounterWidget Tests', () {
@@ -341,6 +358,27 @@ void main() {
         expect(negativeTextFinder, findsOneWidget);
         Text negativeText = tester.widget(negativeTextFinder);
         expect(negativeText.style?.color, equals(Colors.red));
+      });
+
+      testWidgets('should handle transition from positive to negative', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(body: CounterWidget(initialValue: 1)),
+          ),
+        );
+
+        // Decrement twice: 1 -> 0 -> -1
+        await tester.tap(find.byIcon(Icons.remove));
+        await tester.pump();
+        expect(find.text('Counter: 0'), findsOneWidget);
+        expect(find.text('Zero'), findsOneWidget);
+
+        await tester.tap(find.byIcon(Icons.remove));
+        await tester.pump();
+        expect(find.text('Counter: -1'), findsOneWidget);
+        expect(find.text('Negative'), findsOneWidget);
       });
     });
 

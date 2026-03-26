@@ -252,6 +252,25 @@ void main() {
           throwsA(isA<ArgumentError>()),
         );
       });
+
+      test('getUsersByAgeRange should include exact boundary ages', () {
+        // Act
+        final usersInRange = userService.getUsersByAgeRange(25, 30);
+
+        // Assert - testUser1 (age:25) and testUser3 (age:30) are on boundaries
+        expect(usersInRange.length, equals(2));
+        expect(usersInRange, contains(testUser1));
+        expect(usersInRange, contains(testUser3));
+      });
+
+      test('getUsersByAgeRange should work when min equals max', () {
+        // Act
+        final usersInRange = userService.getUsersByAgeRange(25, 25);
+
+        // Assert - only testUser1 (age:25) matches exactly
+        expect(usersInRange.length, equals(1));
+        expect(usersInRange.first, equals(testUser1));
+      });
     });
 
     group('Utility Methods Tests', () {
@@ -313,6 +332,19 @@ void main() {
 
         // Assert
         expect(toggled, isFalse);
+      });
+
+      test('toggleUserStatus should toggle back to original status', () {
+        // Arrange
+        userService.addUser(testUser1);
+        expect(userService.findUserById(1)?.isActive, isTrue);
+
+        // Act - toggle twice
+        userService.toggleUserStatus(1);
+        expect(userService.findUserById(1)?.isActive, isFalse);
+
+        userService.toggleUserStatus(1);
+        expect(userService.findUserById(1)?.isActive, isTrue);
       });
     });
 
@@ -388,7 +420,6 @@ void main() {
         expect(userService.removeUser(0), isFalse);
         expect(userService.findUserById(-1), isNull);
         expect(userService.findUserByEmail(''), isNull);
-        expect(userService.getUsersByAgeRange(25, 25).length, equals(0));
       });
     });
   });

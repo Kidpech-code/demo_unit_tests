@@ -580,6 +580,40 @@ void main() {
           );
         });
 
+        test('should withdraw exact balance successfully', () {
+          // Act
+          accountService.withdraw('ACC001', 1000.0);
+
+          // Assert
+          expect(accountService.getBalance('ACC001'), equals(0.0));
+        });
+
+        test('should throw for zero deposit amount', () {
+          expect(
+            () => accountService.deposit('ACC001', 0),
+            throwsA(
+              isA<BusinessLogicException>().having(
+                (e) => e.errorCode,
+                'errorCode',
+                equals('INVALID_AMOUNT'),
+              ),
+            ),
+          );
+        });
+
+        test('should throw for zero withdrawal amount', () {
+          expect(
+            () => accountService.withdraw('ACC001', 0),
+            throwsA(
+              isA<BusinessLogicException>().having(
+                (e) => e.errorCode,
+                'errorCode',
+                equals('INVALID_AMOUNT'),
+              ),
+            ),
+          );
+        });
+
         test('should transfer successfully', () {
           // Act
           accountService.transfer('ACC001', 'ACC002', 200.0);

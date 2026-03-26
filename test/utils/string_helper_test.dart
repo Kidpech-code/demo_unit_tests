@@ -103,6 +103,11 @@ void main() {
           equals('hello >>'),
         ); // Fixed: correct length calculation
       });
+
+      test('truncate should handle maxLength shorter than suffix', () {
+        expect(StringHelper.truncate('hello', 2), equals('...'));
+        expect(StringHelper.truncate('hello', 0), equals('...'));
+      });
     });
 
     group('Validation Methods', () {
@@ -126,12 +131,19 @@ void main() {
         expect(StringHelper.isValidThaiPhoneNumber('08-1234-5678'), isTrue);
         expect(StringHelper.isValidThaiPhoneNumber('0812345678'), isTrue);
         expect(StringHelper.isValidThaiPhoneNumber('081-234-5678'), isTrue);
+        expect(StringHelper.isValidThaiPhoneNumber('0612345678'), isTrue);
+        expect(StringHelper.isValidThaiPhoneNumber('0912345678'), isTrue);
+
+        // Valid with +66 format
+        expect(StringHelper.isValidThaiPhoneNumber('+66812345678'), isTrue);
+        expect(StringHelper.isValidThaiPhoneNumber('+66612345678'), isTrue);
+        expect(StringHelper.isValidThaiPhoneNumber('+66912345678'), isTrue);
 
         // Invalid Thai phone numbers
         expect(
           StringHelper.isValidThaiPhoneNumber('07-1234-5678'),
           isFalse,
-        ); // ไม่ขึ้นต้นด้วย 08
+        ); // ไม่ขึ้นต้นด้วย 06/08/09
         expect(
           StringHelper.isValidThaiPhoneNumber('081234567'),
           isFalse,
@@ -223,6 +235,15 @@ void main() {
 
         // Assert
         expect(result, isNull);
+      });
+
+      test('parseJson should return null for empty string', () {
+        expect(StringHelper.parseJson(''), isNull);
+      });
+
+      test('parseJson should return null for JSON array', () {
+        // parseJson คืน Map เท่านั้น — array จะ cast ไม่ได้
+        expect(StringHelper.parseJson('[1, 2, 3]'), isNull);
       });
 
       test('replaceEmojis should replace emojis with text', () {

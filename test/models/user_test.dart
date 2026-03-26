@@ -114,6 +114,38 @@ void main() {
         // Act & Assert
         expect(invalidEmailUser.isValidEmail, isFalse);
       });
+
+      test('isAdult should return false for age 17 (boundary -1)', () {
+        final user = User(
+          id: 4,
+          name: 'Boundary User',
+          email: 'boundary@example.com',
+          age: 17,
+        );
+        expect(user.isAdult, isFalse);
+      });
+
+      test('isValidEmail should handle various edge cases', () {
+        final emailCases = {
+          'user@sub.domain.com': true,
+          'a@b.co': true,
+          'user@domain': false,
+          '@domain.com': false,
+          'user@': false,
+          '': false,
+          'user@.com': false,
+          'user name@domain.com': false,
+        };
+
+        for (final entry in emailCases.entries) {
+          final user = User(id: 99, name: 'Test', email: entry.key, age: 20);
+          expect(
+            user.isValidEmail,
+            entry.value,
+            reason: 'Email "${entry.key}" should be ${entry.value}',
+          );
+        }
+      });
     });
 
     group('Method Tests', () {
@@ -169,6 +201,30 @@ void main() {
         expect(user.isActive, isTrue); // ค่า default
       });
 
+      test('fromMap should handle empty Map', () {
+        final user = User.fromMap({});
+
+        expect(user.id, equals(0));
+        expect(user.name, equals(''));
+        expect(user.email, equals(''));
+        expect(user.age, equals(0));
+        expect(user.isActive, isTrue);
+      });
+
+      test('toMap and fromMap should be reversible (round-trip)', () {
+        final original = User(
+          id: 42,
+          name: 'Round Trip',
+          email: 'round@trip.com',
+          age: 33,
+          isActive: false,
+        );
+
+        final restored = User.fromMap(original.toMap());
+
+        expect(restored, equals(original));
+      });
+
       test('copyWith should create new user with modified fields', () {
         // Act
         final modifiedUser = testUser.copyWith(name: 'สมชาย แก้ไข', age: 26);
@@ -192,6 +248,24 @@ void main() {
         // Assert - ตรวจสอบว่า object เดิมไม่เปลี่ยนแปลง
         expect(testUser.name, equals(originalName));
         expect(testUser.age, equals(originalAge));
+      });
+
+      test('copyWith should work when changing ALL fields at once', () {
+        // Arrange & Act — เปลี่ยนทุก field พร้อมกัน เพื่อยืนยันว่าทุก parameter ทำงานอิสระ
+        final fullyModified = testUser.copyWith(
+          id: 999,
+          name: 'Completely New',
+          email: 'new@email.com',
+          age: 50,
+          isActive: false,
+        );
+
+        // Assert
+        expect(fullyModified.id, equals(999));
+        expect(fullyModified.name, equals('Completely New'));
+        expect(fullyModified.email, equals('new@email.com'));
+        expect(fullyModified.age, equals(50));
+        expect(fullyModified.isActive, isFalse);
       });
     });
 
@@ -239,6 +313,17 @@ void main() {
 
         // Act & Assert
         expect(user1, isNot(equals(user2)));
+      });
+
+      test('should not be equal to non-User object', () {
+        expect(testUser == 'not a user', isFalse);
+        expect(testUser == 42, isFalse);
+      });
+
+      test('hashCode should differ for different users', () {
+        final user1 = User(id: 1, name: 'User A', email: 'a@test.com', age: 20);
+        final user2 = User(id: 2, name: 'User B', email: 'b@test.com', age: 30);
+        expect(user1.hashCode, isNot(equals(user2.hashCode)));
       });
 
       test('should be identical when same reference', () {
