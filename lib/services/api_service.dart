@@ -28,6 +28,10 @@ class RealHttpClient implements HttpClient {
   }) {
     return _client.post(uri, headers: headers, body: body);
   }
+
+  void dispose() {
+    _client.close();
+  }
 }
 
 /// Service สำหรับจัดการข้อมูล API

@@ -33,7 +33,7 @@ class MathUtils {
   static bool isEven(int number) => number % 2 == 0;
 
   /// ตรวจสอบว่าเป็นเลขคี่หรือไม่
-  static bool isOdd(int number) => number % 2 == 1;
+  static bool isOdd(int number) => number % 2 != 0;
 
   /// ตรวจสอบว่าเป็นจำนวนเฉพาะหรือไม่
   static bool isPrime(int number) {
@@ -41,7 +41,7 @@ class MathUtils {
     if (number == 2) return true;
     if (number % 2 == 0) return false;
 
-    for (int i = 3; i <= sqrt(number); i += 2) {
+    for (int i = 3; i * i <= number; i += 2) {
       if (number % i == 0) return false;
     }
     return true;

@@ -57,8 +57,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
+      final maxId = _users.isEmpty
+          ? 0
+          : _users.map((u) => u.id).reduce((a, b) => a > b ? a : b);
       final newUser = User(
-        id: _users.length + 1,
+        id: maxId + 1,
         name: name,
         email: email,
         age: 25, // ค่า default

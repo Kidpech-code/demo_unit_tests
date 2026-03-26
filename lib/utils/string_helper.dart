@@ -26,9 +26,7 @@ class StringHelper {
 
   /// ลบ whitespace ออกจากข้อความ
   static String removeWhitespace(String text) {
-    return text
-        .replaceAll(RegExp(r'\s+'), '')
-        .replaceAll(RegExp(r'[\n\t\r\u00A0]+'), '');
+    return text.replaceAll(RegExp(r'[\s\u00A0]+'), '');
   }
 
   /// ตรวจสอบว่าเป็น email ที่ถูกต้องหรือไม่
@@ -42,8 +40,10 @@ class StringHelper {
   /// ตรวจสอบว่าเป็นหมายเลขโทรศัพท์ไทยที่ถูกต้องหรือไม่
   static bool isValidThaiPhoneNumber(String phone) {
     if (isEmpty(phone)) return false;
-    // รูปแบบ: 08x-xxx-xxxx หรือ 08xxxxxxxx หรือ +66-8x-xxx-xxxx
-    return RegExp(r'^(\+66-?8|08)\d{8}$').hasMatch(phone.replaceAll('-', ''));
+    // รูปแบบ: 06x/08x/09x-xxx-xxxx หรือ +66-6x/8x/9x-xxx-xxxx
+    return RegExp(
+      r'^(\+66[689]|0[689])\d{8}$',
+    ).hasMatch(phone.replaceAll('-', ''));
   }
 
   /// ตรวจสอบว่าเป็นรหัสผ่านที่แข็งแรงหรือไม่
@@ -65,7 +65,7 @@ class StringHelper {
     // Handle newlines and tabs as word separators
     return text
         .trim()
-        .split(RegExp(r'[\s\n\t]+'))
+        .split(RegExp(r'\s+'))
         .where((word) => word.isNotEmpty)
         .length;
   }

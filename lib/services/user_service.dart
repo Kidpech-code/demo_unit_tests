@@ -21,20 +21,18 @@ class UserService {
 
   /// ค้นหาผู้ใช้ตาม ID
   User? findUserById(int userId) {
-    try {
-      return _users.firstWhere((user) => user.id == userId);
-    } catch (e) {
-      return null;
+    for (final user in _users) {
+      if (user.id == userId) return user;
     }
+    return null;
   }
 
   /// ค้นหาผู้ใช้ตาม email
   User? findUserByEmail(String email) {
-    try {
-      return _users.firstWhere((user) => user.email == email);
-    } catch (e) {
-      return null;
+    for (final user in _users) {
+      if (user.email == email) return user;
     }
+    return null;
   }
 
   /// อัปเดตข้อมูลผู้ใช้

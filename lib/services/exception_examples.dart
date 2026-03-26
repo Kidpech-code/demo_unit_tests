@@ -127,7 +127,7 @@ class ValidationService {
 class NetworkService {
   /// จำลองการเรียก API ที่อาจล้มเหลว
   Future<Map<String, dynamic>> fetchData(String endpoint) async {
-    await Future.delayed(Duration(milliseconds: 100)); // จำลองความล่าช้า
+    await Future.delayed(const Duration(milliseconds: 100)); // จำลองความล่าช้า
 
     if (endpoint.isEmpty) {
       throw ArgumentError('Endpoint cannot be empty');
@@ -150,7 +150,7 @@ class NetworkService {
     }
 
     if (endpoint == '/timeout') {
-      await Future.delayed(Duration(seconds: 10)); // จำลองการ timeout
+      await Future.delayed(const Duration(seconds: 10)); // จำลองการ timeout
       return {'data': 'success'};
     }
 

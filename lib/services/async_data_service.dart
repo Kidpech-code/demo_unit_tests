@@ -7,7 +7,7 @@ class AsyncDataService {
 
   /// จำลองการดึงข้อมูลจาก API (สำเร็จ)
   Future<Map<String, dynamic>> fetchUserData(int userId) async {
-    await Future.delayed(Duration(milliseconds: 100)); // จำลองความล่าช้า
+    await Future.delayed(const Duration(milliseconds: 100)); // จำลองความล่าช้า
 
     if (userId <= 0) {
       throw ArgumentError('User ID must be positive');
@@ -23,7 +23,7 @@ class AsyncDataService {
 
   /// จำลองการดึงข้อมูลที่อาจล้มเหลว
   Future<String> fetchDataWithRandomFailure() async {
-    await Future.delayed(Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 50));
 
     if (_random.nextBool()) {
       throw Exception('Random network error occurred');
@@ -34,7 +34,7 @@ class AsyncDataService {
 
   /// จำลองการอัปโหลดไฟล์
   Future<bool> uploadFile(String filename, List<int> data) async {
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     if (filename.isEmpty) {
       throw ArgumentError('Filename cannot be empty');
@@ -55,7 +55,7 @@ class AsyncDataService {
   /// จำลองการดาวน์โหลดข้อมูลแบบ Stream
   Stream<int> downloadProgress() async* {
     for (int progress = 0; progress <= 100; progress += 10) {
-      await Future.delayed(Duration(milliseconds: 10));
+      await Future.delayed(const Duration(milliseconds: 10));
       yield progress;
     }
   }
@@ -67,7 +67,7 @@ class AsyncDataService {
     }
 
     List<Future<String>> futures = ids.map((id) async {
-      await Future.delayed(Duration(milliseconds: 50));
+      await Future.delayed(const Duration(milliseconds: 50));
       return 'Data for ID: $id';
     }).toList();
 
@@ -77,7 +77,7 @@ class AsyncDataService {
   /// จำลองการทำงานที่มี timeout
   Future<String> fetchDataWithTimeout(Duration timeout) async {
     return await Future.delayed(
-      Duration(milliseconds: 100),
+      const Duration(milliseconds: 100),
       () => 'Data fetched within timeout',
     ).timeout(
       timeout,
@@ -91,7 +91,7 @@ class AsyncDataService {
 
     while (attempt < maxRetries) {
       try {
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future.delayed(const Duration(milliseconds: 50));
 
         // จำลองความล้มเหลวใน 2 ครั้งแรก
         if (attempt < 2) {
@@ -105,7 +105,7 @@ class AsyncDataService {
           rethrow;
         }
         await Future.delayed(
-          Duration(milliseconds: 100),
+          const Duration(milliseconds: 100),
         ); // หน่วงเวลาก่อน retry
       }
     }
@@ -133,7 +133,7 @@ class AsyncDataService {
 
       // หน่วงเวลาระหว่าง batch
       if (end < items.length) {
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
       }
     }
 

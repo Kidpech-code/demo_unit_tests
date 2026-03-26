@@ -6,7 +6,7 @@ class User {
   final int age;
   final bool isActive;
 
-  User({
+  const User({
     required this.id,
     required this.name,
     required this.email,
@@ -73,13 +73,7 @@ class User {
   }
 
   @override
-  int get hashCode {
-    return id.hashCode ^
-        name.hashCode ^
-        email.hashCode ^
-        age.hashCode ^
-        isActive.hashCode;
-  }
+  int get hashCode => Object.hash(id, name, email, age, isActive);
 
   @override
   String toString() {
