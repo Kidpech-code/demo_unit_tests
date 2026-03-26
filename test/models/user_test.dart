@@ -1,3 +1,27 @@
+/// ===================================================================
+/// User Model Unit Tests
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ Data Model class — เป็น unit test พื้นฐานที่สุด
+///
+/// ## แนวคิดที่ใช้
+/// - **group()** — จัดกลุ่ม test ที่เกี่ยวข้อง เช่น Constructor, isAdult, toMap
+/// - **setUp()** — สร้างข้อมูลทดสอบใหม่ก่อนทุก test → แต่ละ test ไม่กระทบกัน
+/// - **AAA Pattern** — Arrange (เตรียม) → Act (ทำ) → Assert (ตรวจ)
+/// - **Boundary Value Analysis** — ทดสอบค่าขอบ เช่น อายุ 17, 18, 19
+/// - **Round-trip Test** — toMap → fromMap ต้องได้ข้อมูลเดิม
+/// - **Equality Testing** — override == แล้วทดสอบว่าเปรียบเทียบ object ได้ถูก
+///
+/// ## Matcher ที่ใช้ในไฟล์นี้
+/// - `equals()` — เปรียบเทียบค่า
+/// - `isTrue` / `isFalse` — ตรวจ boolean
+/// - `isNot(equals())` — ตรวจว่าไม่เท่ากัน
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/models/user_test.dart
+/// ```
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/models/user.dart';
 

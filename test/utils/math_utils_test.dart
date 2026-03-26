@@ -1,3 +1,22 @@
+/// ===================================================================
+/// MathUtils Unit Tests — ทดสอบ Pure Functions
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ static pure functions — ฟังก์ชันที่ input เดิม → output เดิมเสมอ
+/// ไม่มี side effect, ไม่ต้อง mock อะไร → **ทดสอบง่ายที่สุด**
+///
+/// ## แนวคิดที่ใช้
+/// - **Pure Function Testing** — ไม่มี dependency, ไม่ต้อง setUp
+/// - **Exception Testing** — `throwsA(isA<ArgumentError>())`
+/// - **Boundary Value** — ทดสอบ 0, 1, -1, ค่าใหญ่มาก
+/// - **Generics Testing** — ทดสอบ `max<T>`, `min<T>` กับหลาย type
+/// - **closeTo()** — สำหรับเปรียบเทียบ double ที่มีทศนิยม
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/utils/math_utils_test.dart
+/// ```
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/utils/math_utils.dart';
 

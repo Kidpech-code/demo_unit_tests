@@ -1,3 +1,35 @@
+/// ===================================================================
+/// Exception Handling Unit Tests — สอน throwsA, isA, .having()
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ exception handling อย่างละเอียด:
+/// - ตรวจ type ของ exception
+/// - ตรวจ message, field, errorCode ข้างใน
+/// - ทดสอบ business logic ที่ซับซ้อน (transfer + rollback)
+///
+/// ## แนวคิดที่ใช้
+/// - **throwsA()** — ตรวจว่า function throw exception
+/// - **isA<T>()** — ตรวจ type ของ exception
+/// - **isA<T>().having()** — ตรวจ property ข้างใน exception
+///   ```dart
+///   expect(
+///     () => service.validateEmail(null),
+///     throwsA(isA<ValidationException>()
+///       .having((e) => e.message, 'message', 'Email is required')
+///       .having((e) => e.field, 'field', 'email')),
+///   );
+///   ```
+/// - **returnsNormally** — ตรวจว่า function ไม่ throw
+///   ```dart
+///   expect(() => service.validateEmail('test@mail.com'), returnsNormally);
+///   ```
+/// - **Transaction Rollback Testing** — โอนเงินล้มเหลว → ยอดต้นทางไม่เปลี่ยน
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/services/exception_handling_test.dart
+/// ```
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/services/exception_examples.dart';

@@ -1,3 +1,29 @@
+/// ===================================================================
+/// AsyncDataService Unit Tests — สอน Async & Stream Testing
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ asynchronous operations: Future, Stream, Timeout, Retry, Batch
+///
+/// ## แนวคิดที่ใช้
+/// - **async test** — ใช้ `async/await` ใน test body
+///   ```dart
+///   test('description', () async {
+///     final result = await service.fetchUserData(1);
+///     expect(result['id'], equals(1));
+///   });
+///   ```
+/// - **Stream testing** — ใช้ `emitsInOrder()` ตรวจลำดับค่าที่ stream ส่ง
+///   ```dart
+///   expectLater(stream, emitsInOrder([0, 10, 20, ...]));
+///   ```
+/// - **Timeout testing** — ใช้ `throwsA(isA<TimeoutException>())`
+/// - **Retry testing** — ทดสอบ retry สำเร็จ vs retry หมดรอบ
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/services/async_data_service_test.dart
+/// ```
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/services/async_data_service.dart';

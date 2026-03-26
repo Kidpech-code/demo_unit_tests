@@ -1,9 +1,43 @@
+/// ===================================================================
+/// WebViewService Unit Tests — สอน Mocktail (ทางเลือกแทน Mockito)
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ WebViewService ด้วย **Mocktail** แทนที่จะใช้ Mockito
+///
+/// ## ทำไมใช้ Mocktail แทน Mockito?
+/// - **ไม่ต้อง Code Generation** — ไม่ต้องรัน build_runner
+/// - **syntax ต่างจาก Mockito** — ใช้ lambda: `when(() => mock.fn())`
+/// - เหมาะกับ class ที่ mock ด้วย Mockito ยาก (เช่น WebViewController)
+///
+/// ## เปรียบเทียบ Syntax
+/// | Mockito | Mocktail |
+/// |---------|----------|
+/// | `when(mock.fn()).thenReturn(v)` | `when(() => mock.fn()).thenReturn(v)` |
+/// | `verify(mock.fn())` | `verify(() => mock.fn())` |
+/// | `any` | `any()` |
+/// | `@GenerateMocks` + build_runner | ไม่ต้อง, แค่ extends Mock |
+///
+/// ## สร้าง Mock ด้วย Mocktail
+/// ```dart
+/// class MockWebViewController extends Mock implements WebViewController {}
+/// ```
+///
+/// ## registerFallbackValue()
+/// ต้องลงทะเบียน fallback value สำหรับ type ที่ใช้กับ `any()`
+/// เรียกใน `setUpAll()` ก่อน test ทั้งหมด
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/services/webview_service_test.dart
+/// ```
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:demo_unit_tests/services/webview_service.dart';
 
-// Mock class สำหรับ WebViewController
+// สร้าง Mock class ด้วย Mocktail — แค่ extends Mock + implements
+// ไม่ต้องรัน build_runner เหมือน Mockito
 class MockWebViewController extends Mock implements WebViewController {}
 
 void main() {

@@ -1,3 +1,27 @@
+/// ===================================================================
+/// UserService Unit Tests — สอน CRUD Testing & State Management
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ CRUD operations (Create, Read, Update, Delete) บน in-memory list
+///
+/// ## แนวคิดที่ใช้
+/// - **setUp()** — สร้าง UserService ใหม่ + เพิ่ม test data ก่อนทุก test
+/// - **State-based Testing** — ตรวจสถานะก่อน/หลังเรียก function
+///   ```dart
+///   expect(service.getTotalUsers(), equals(0)); // before
+///   service.addUser(user);
+///   expect(service.getTotalUsers(), equals(1)); // after
+///   ```
+/// - **Return Value Testing** — removeUser return true/false
+/// - **Exception Testing** — addUser ที่ ID ซ้ำ → throwsA
+/// - **Unmodifiable List** — getAllUsers() return list ที่ add ไม่ได้
+/// - **Test Isolation** — แต่ละ test เริ่มต้นจาก state ใหม่
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/services/user_service_test.dart
+/// ```
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/services/user_service.dart';
 import 'package:demo_unit_tests/models/user.dart';

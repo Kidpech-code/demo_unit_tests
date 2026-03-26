@@ -1,7 +1,72 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-/// Custom Widget สำหรับแสดงข้อมูลผู้ใช้
+/// ===================================================================
+/// Custom Widgets — สอน Widget Testing ด้วย Flutter Test
+/// ===================================================================
+///
+/// ## ภาพรวม
+/// ไฟล์นี้รวม Widget ตัวอย่างที่สอนแนวคิด Widget Testing:
+///
+/// | Widget | ประเภท | สิ่งที่สอน |
+/// |--------|--------|----------|
+/// | [UserCard] | StatelessWidget | find.text(), find.byType(), callback testing |
+/// | [CounterWidget] | StatefulWidget | tap(), state change, boundary testing |
+/// | [AddUserForm] | StatefulWidget + Form | enterText(), form validation, async submit |
+/// | [LoadingWidget] | StatelessWidget | enum-based rendering, conditional UI |
+/// | [SearchWidget] | StatefulWidget | debounce, Timer, clear button |
+///
+/// ## Flutter Widget Testing Basics
+/// ```dart
+/// testWidgets('description', (WidgetTester tester) async {
+///   // 1. สร้าง widget ใน test environment
+///   await tester.pumpWidget(MaterialApp(home: MyWidget()));
+///
+///   // 2. ค้นหา widget ด้วย Finder
+///   expect(find.text('Hello'), findsOneWidget);
+///
+///   // 3. จำลองการกระทำ
+///   await tester.tap(find.byIcon(Icons.add));
+///   await tester.pump(); // rebuild widget
+///
+///   // 4. ตรวจผลลัพธ์
+///   expect(find.text('1'), findsOneWidget);
+/// });
+/// ```
+///
+/// ## pump() vs pumpAndSettle()
+/// - `pump()` — rebuild widget 1 ครั้ง (ใช้กับ setState)
+/// - `pump(Duration)` — rebuild หลังผ่าน duration (ใช้กับ animation/delay)
+/// - `pumpAndSettle()` — rebuild จนไม่มี frame ค้าง (ใช้กับ animation)
+///
+/// ## Finder ที่ใช้บ่อย
+/// - `find.text('Hello')` — ค้นหาด้วยข้อความ
+/// - `find.byType(ElevatedButton)` — ค้นหาด้วย type ของ widget
+/// - `find.byIcon(Icons.add)` — ค้นหาด้วย icon
+/// - `find.byKey(Key('myKey'))` — ค้นหาด้วย key
+/// - `find.byTooltip('Edit User')` — ค้นหาด้วย tooltip
+///
+/// ## Matcher ที่ใช้บ่อย
+/// - `findsOneWidget` — เจอ 1 ตัว
+/// - `findsNothing` — ไม่เจอเลย
+/// - `findsNWidgets(3)` — เจอ N ตัว
+/// - `findsWidgets` — เจออย่างน้อย 1 ตัว
+
+/// Widget แสดงข้อมูลผู้ใช้เป็น Card — **StatelessWidget**
+///
+/// ## สิ่งที่สอนใน Widget Test
+/// - **find.text()** — ค้นหาชื่อ, อีเมลที่แสดง
+/// - **find.byType()** — ค้นหา CircleAvatar, IconButton
+/// - **Callback Testing** — ตรวจว่า onTap, onEditPressed ถูกเรียก
+///   ```dart
+///   bool tapped = false;
+///   await tester.pumpWidget(MaterialApp(
+///     home: UserCard(name: 'Test', email: 'a@b.c', onTap: () => tapped = true),
+///   ));
+///   await tester.tap(find.byType(UserCard));
+///   expect(tapped, isTrue);
+///   ```
+/// - **Conditional Rendering** — ถ้า onEditPressed == null → ไม่แสดง edit button
 class UserCard extends StatelessWidget {
   final String name;
   final String email;
@@ -97,7 +162,19 @@ class UserCard extends StatelessWidget {
   }
 }
 
-/// Counter Widget พร้อมการแสดงข้อความที่เปลี่ยนแปลง
+/// Counter Widget — **StatefulWidget** ที่สอนการทดสอบ State Changes
+///
+/// ## สิ่งที่สอนใน Widget Test
+/// - **tap() + pump()** — กดปุ่มเพิ่ม/ลดแล้วตรวจค่า
+///   ```dart
+///   await tester.tap(find.byIcon(Icons.add));
+///   await tester.pump(); // rebuild เพื่อเห็นค่าใหม่
+///   expect(find.text('Counter: 1'), findsOneWidget);
+///   ```
+/// - **Boundary Testing** — ถ้า maxValue=5 กด + เกิน 5 ไม่ได้
+/// - **Conditional UI** — ปุ่มเปลี่ยนสีเมื่อ disabled
+/// - **Callback Testing** — ตรวจว่า onValueChanged ถูกเรียกพร้อมค่าใหม่
+/// - **Description Mapping** — ค่า 0 แสดง "Zero", บวกแสดง "Positive", ลบแสดง "Negative"
 class CounterWidget extends StatefulWidget {
   final int initialValue;
   final int? maxValue;
@@ -207,7 +284,27 @@ class _CounterWidgetState extends State<CounterWidget> {
   }
 }
 
-/// Form Widget สำหรับเพิ่มผู้ใช้ใหม่
+/// Form Widget สำหรับเพิ่มผู้ใช้ — สอน **Form Validation + Async Submit**
+///
+/// ## สิ่งที่สอนใน Widget Test
+/// - **enterText()** — พิมพ์ข้อความในช่อง input
+///   ```dart
+///   await tester.enterText(find.byType(TextFormField).first, 'สมชาย');
+///   ```
+/// - **Form Validation** — กด submit โดยไม่กรอก → แสดง error message
+///   ```dart
+///   await tester.tap(find.text('Add User'));
+///   await tester.pump(); // trigger validation
+///   expect(find.text('Name is required'), findsOneWidget);
+///   ```
+/// - **Async Submit** — กด submit → แสดง loading → เรียก callback
+///   ```dart
+///   await tester.tap(find.text('Add User'));
+///   await tester.pump(); // เริ่ม loading
+///   expect(find.byType(CircularProgressIndicator), findsOneWidget);
+///   await tester.pump(Duration(milliseconds: 500)); // รอ async เสร็จ
+///   ```
+/// - **Callback Verification** — ตรวจว่า onSubmit ถูกเรียกพร้อม name, email
 class AddUserForm extends StatefulWidget {
   final void Function(String name, String email)? onSubmit;
   final String? initialName;
@@ -342,7 +439,16 @@ class _AddUserFormState extends State<AddUserForm> {
   }
 }
 
-/// Loading Widget แบบต่างๆ
+/// Loading Widget — สอน **Enum-based Conditional Rendering**
+///
+/// ## สิ่งที่สอนใน Widget Test
+/// - **Type-based Testing** — ตรวจว่า widget ที่แสดงตรงกับ LoadingType
+///   ```dart
+///   // circular → CircularProgressIndicator
+///   // linear → LinearProgressIndicator
+///   // dots → Container 3 ตัว (custom dots)
+///   ```
+/// - **Conditional Message** — ถ้ามี message → แสดง Text, ไม่มี → ไม่แสดง
 class LoadingWidget extends StatelessWidget {
   final String? message;
   final LoadingType type;
@@ -404,7 +510,21 @@ class LoadingWidget extends StatelessWidget {
 
 enum LoadingType { circular, linear, dots }
 
-/// Search Widget
+/// Search Widget — สอน **Debounce Pattern + Timer Testing**
+///
+/// ## สิ่งที่สอนใน Widget Test
+/// - **enterText() + pump(debounceDelay)** — พิมพ์แล้วรอ debounce
+///   ```dart
+///   await tester.enterText(find.byType(TextField), 'flutter');
+///   await tester.pump(Duration(milliseconds: 500)); // รอ debounce
+///   expect(searchQuery, equals('flutter'));
+///   ```
+/// - **Clear Button** — พิมพ์ข้อความ → ปุ่ม X ปรากฏ → กด X → ข้อความหายไป
+/// - **Debounce Testing** — พิมพ์เร็วๆ → callback ถูกเรียกแค่ครั้งเดียว
+///
+/// ## Debounce คืออะไร?
+/// เมื่อ user พิมพ์ จะรอ 500ms หลังหยุดพิมพ์ก่อนค่อยเรียก callback
+/// ป้องกันการเรียก API ทุกตัวอักษร (ลด network requests)
 class SearchWidget extends StatefulWidget {
   final String? hintText;
   final ValueChanged<String>? onSearchChanged;

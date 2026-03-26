@@ -1,3 +1,21 @@
+/// ===================================================================
+/// StringHelper Unit Tests — ทดสอบ String Validation & Transformation
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบฟังก์ชัน String ที่ใช้บ่อย: validation (email, phone, password)
+/// และ transformation (capitalize, truncate, reverse)
+///
+/// ## แนวคิดที่ใช้
+/// - **Null Safety Testing** — ทดสอบ null, empty, whitespace
+/// - **RegExp Testing** — ทดสอบ pattern matching (valid + invalid cases)
+/// - **Edge Case Testing** — empty string, single char, emoji, UTF-8
+/// - **Table-driven Tests** — ทดสอบหลายค่าในลูป
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/utils/string_helper_test.dart
+/// ```
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_unit_tests/utils/string_helper.dart';
 

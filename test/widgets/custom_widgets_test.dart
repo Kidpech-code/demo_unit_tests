@@ -1,3 +1,54 @@
+/// ===================================================================
+/// Custom Widgets Tests — สอน Widget Testing ทุกรูปแบบ
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ Flutter Widget ด้วย `testWidgets` — ครอบคลุมทุกแนวคิด:
+///
+/// ## แนวคิดที่ใช้
+///
+/// ### 1. Widget Testing Basics
+/// ```dart
+/// testWidgets('description', (WidgetTester tester) async {
+///   await tester.pumpWidget(MaterialApp(home: MyWidget()));
+///   expect(find.text('Hello'), findsOneWidget);
+/// });
+/// ```
+///
+/// ### 2. Finder Types
+/// - `find.text('Hello')` — ค้นหาด้วยข้อความ
+/// - `find.byType(ElevatedButton)` — ค้นหาด้วย type
+/// - `find.byIcon(Icons.add)` — ค้นหาด้วย icon
+/// - `find.byTooltip('Edit User')` — ค้นหาด้วย tooltip
+///
+/// ### 3. User Interactions
+/// - `tester.tap(finder)` — จำลองการแตะ
+/// - `tester.enterText(finder, 'text')` — จำลองการพิมพ์
+/// - `tester.pump()` — rebuild widget 1 ครั้ง
+/// - `tester.pump(Duration)` — rebuild หลังผ่าน duration
+/// - `tester.pumpAndSettle()` — rebuild จนไม่มี animation ค้าง
+///
+/// ### 4. Matcher Types
+/// - `findsOneWidget` — เจอ 1 ตัว
+/// - `findsNothing` — ไม่เจอ
+/// - `findsNWidgets(3)` — เจอ N ตัว
+///
+/// ### 5. Callback Testing
+/// ```dart
+/// bool tapped = false;
+/// await tester.pumpWidget(Widget(onTap: () => tapped = true));
+/// await tester.tap(find.byType(Widget));
+/// expect(tapped, isTrue);
+/// ```
+///
+/// ### 6. Form & Async Testing
+/// - enterText → tap submit → pump (validation) → check error messages
+/// - Async submit → pump(Duration) → check loading indicator
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter test test/widgets/custom_widgets_test.dart
+/// ```
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

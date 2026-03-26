@@ -1,3 +1,29 @@
+/// ===================================================================
+/// ApiService Unit Tests — สอน Mockito & Dependency Injection
+/// ===================================================================
+///
+/// ## ไฟล์นี้สอนอะไร?
+/// ทดสอบ HTTP API calls โดยไม่ต้องเรียก server จริง
+/// ใช้ **Mockito** สร้าง mock object แทน HttpClient จริง
+///
+/// ## แนวคิดที่ใช้
+/// - **Mockito Code Generation** — ใช้ `@GenerateMocks` + `build_runner`
+///   → สร้างไฟล์ `api_service_test.mocks.dart` อัตโนมัติ
+/// - **when().thenAnswer()** — กำหนดว่า mock จะ return อะไร
+/// - **verify()** — ตรวจว่า mock ถูกเรียกจริง
+/// - **any** — match parameter อะไรก็ได้
+/// - **HTTP Status Code Testing** — 200 OK, 201 Created, 404 Not Found
+///
+/// ## ขั้นตอนสร้าง Mock ด้วย Mockito
+/// 1. เพิ่ม `@GenerateMocks([HttpClient])` ก่อน import
+/// 2. รัน `flutter pub run build_runner build`
+/// 3. จะได้ไฟล์ `.mocks.dart` ที่มี `MockHttpClient` class
+///
+/// ## วิธีรัน
+/// ```bash
+/// flutter pub run build_runner build  # สร้าง mock ก่อน (ครั้งแรก)
+/// flutter test test/services/api_service_test.dart
+/// ```
 import 'dart:convert' show json;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -6,7 +32,7 @@ import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 import 'package:demo_unit_tests/services/api_service.dart';
 
-// สร้าง Mock classes ด้วย annotation
+// สร้าง Mock classes ด้วย annotation — Mockito จะ generate MockHttpClient
 @GenerateMocks([HttpClient])
 import 'api_service_test.mocks.dart';
 
